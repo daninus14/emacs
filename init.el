@@ -1,52 +1,3 @@
-; (load (expand-file-name "~/.quicklisp/slime-helper.el"))
-;(setq inferior-lisp-program "sbcl")
-
-;(slime-setup '(slime-fancy slime-quicklisp slime-asdf))
-
-
-;; For Roswell - DN
-; (load (expand-file-name "~/.roswell/helper.el"))
-; (setq inferior-lisp-program "ros -Q run")
-
-
-;; Setup load-path, autoloads and your lisp system
-;(add-to-list 'load-path "~/dir/to/cloned/slime")
-;(require 'slime-autoloads)
-
-; (require 'package)
-; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-; ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-; ;; and `package-pinned-packages`. Most users will not need or want to do this.
-; ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-; (package-initialize)
-
-
-; ;;(add-hook 'lisp-mode-hook '(lambda () 
-; ;;                              (unless (get-process "SLIME Lisp")
-; ;;                                (slime))))
-; ;;
-; ;;(add-hook 'lisp-mode-hook '(lambda ()
-; ;;                                  (unless (get-process "SLIME Lisp")
-; ;;                                     (let ((oldbuff (current-buffer)))
-; ;;                                       (slime)
-; ;;                                       (switch-buffer oldbuff))))
-
-
-; (setq show-paren-delay 0)
-; (show-paren-mode 1)
-
-; (custom-set-variables
-;  ;; custom-set-variables was added by Custom.
-;  ;; If you edit it by hand, you could mess it up, so be careful.
-;  ;; Your init file should contain only one such instance.
-;  ;; If there is more than one, they won't work right.
-;  '(package-selected-packages '(slime-volleyball)))
-; (custom-set-faces
-;  ;; custom-set-faces was added by Custom.
-;  ;; If you edit it by hand, you could mess it up, so be careful.
-;  ;; Your init file should contain only one such instance.
-;  ;; If there is more than one, they won't work right.
-;  )
 
 
 ; https://github.com/benjaminor/kkp
@@ -227,49 +178,12 @@
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
-
-;; ;; Commented projectile out because sowing down emacs and bloating memory...
-;; ;; We need something to manage the various projects we work on
-;; ;; and for common functionality like project-wide searching, fuzzy file finding etc.
-;; (use-package projectile
-;;   :init
-;;   (projectile-mode t) ;; Enable this immediately
-;;   :config
-;;   (setq projectile-enable-caching t ;; Much better performance on large projects
-;; i        projectile-completion-system 'ivy)) ;; Ideally the minibuffer should aways look similar
-
-
-;; ;; Counsel and projectile should work together.
-;; (use-package counsel-projectile
-;;   :init
-;;   (counsel-projectile-mode))
-
 ;; counsel-git to find file in project and counsel-git-grep to find text in project
 
 (global-set-key (kbd "C-c w") 'clipboard-kill-ring-save)
 
-;; This will translate <return> to RET for org-mode to work better...
-;; I'm removing it since C-M-m does the same thing...
-;; But saving for the future!
-;; (define-key special-event-map (kbd "<return>") 'my-ret-event)
-;; (defun my-ret-event ()
-;;   "Push RET onto `unread-command-events'."
-;;   (interactive)
-;;   (push '(t . ?\C-m) unread-command-events))
-
-(setq completion-styles '(initials flex))
+(setq completion-styles '(flex initials))
 ; (global-set-key (kbd "M-x") 'helm-M-x)
-
-
-;; https://github.com/jcs-elpa/company-fuzzy/tree/059e3e0893a2b3c0ad4bf27b6963e7547b97b5d4
-; (use-package company-fuzzy
-;  :hook (company-mode . company-fuzzy-mode)
-;  :init
-;  (setq company-fuzzy-sorting-backend 'flx
-;        company-fuzzy-prefix-on-top nil
-;        company-fuzzy-trigger-symbols '("." "->" "<" "\"" "'" "@")))
-
-; (global-company-fuzzy-mode 1)
 
 (provide 'init)
 ;;; init.el ends here
