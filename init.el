@@ -96,19 +96,6 @@
   (counsel-mode 1)
   :bind (:map ivy-minibuffer-map))
 
-;; Company is the best Emacs completion system.
-;  :init
-;  (setq company-require-match nil            ; Don't require match, so you can still move your cursor as expected.
-;        company-tooltip-align-annotations t  ; Align annotation to the right side.
-;        company-eclim-auto-save nil          ; Stop eclim auto save.
-;        company-dabbrev-downcase nil)        ; No downcase when completion.
-
-  ;; Enable downcase only when completing the completion.
-;  (defun jcs--company-complete-selection--advice-around (fn)
-;    "Advice execute around `company-complete-selection' command."
-;    (let ((company-dabbrev-downcase t))
-;      (call-interactively fn)))
-;  (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around)
 
 (use-package company
   :bind (("C-." . company-complete))
