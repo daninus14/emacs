@@ -1,6 +1,4 @@
-
-
-; https://github.com/benjaminor/kkp
+;; -*- mode: elisp -*-
 
 (when (>= emacs-major-version 24)
   (progn
@@ -14,32 +12,16 @@
   (when (< emacs-major-version 27) (package-initialize)))
 
 
+;; Any Customize-based settings should live in custom.el, not here.
+(setq custom-file "~/.emacs.d/custom.el") ;; Without this emacs will dump generated custom settings in this file. No bueno.
+(load custom-file 'noerror)
 
-
-
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(which-key lsp-mode flycheck company counsel-projectile projectile counsel ivy doom-themes exec-path-from-shell kkp slime-volleyball)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
+; https://github.com/benjaminor/kkp
 (use-package kkp
   :ensure t
   :config
   ;; (setq kkp-alt-modifier 'alt) ;; use this if you want to map the Alt keyboard modifier to Alt in Emacs (and not to Meta)
   (global-kkp-mode +1))
-
-
-;; -*- mode: elisp -*-
 
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
 (setq inhibit-splash-screen t)
@@ -57,11 +39,6 @@
 (with-eval-after-load 'org       
   (setq org-startup-indented t) ; Enable `org-indent-mode' by default
   (add-hook 'org-mode-hook #'visual-line-mode))
-
-
-
-; figure out how to enable it only in org mode??
-;(add-hook 'text-mode-hook 'visual-line-mode)
 
 (visual-line-mode 1)
 
@@ -83,10 +60,6 @@
 ;; (use-package doom-themes
 ;;   :init
 ;;   (load-theme 'doom-one t))
-
-;; Any Customize-based settings should live in custom.el, not here.
-(setq custom-file "~/.emacs.d/custom.el") ;; Without this emacs will dump generated custom settings in this file. No bueno.
-(load custom-file 'noerror)
 
 ;;; OS specific config
 (defconst *is-a-mac* (eq system-type 'darwin))
