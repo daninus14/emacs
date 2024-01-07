@@ -77,7 +77,7 @@
 (turn-on-pbcopy)
 
 (load (expand-file-name "~/.roswell/helper.el"))
-; (setq inferior-lisp-program "ros -Q run")
+(setq inferior-lisp-program "ros -Q run")
 
 (setq slime-contribs '(slime-fancy slime-quicklisp slime-asdf helm-slime slime-quicklisp slime-company))
 
