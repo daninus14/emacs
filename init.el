@@ -73,7 +73,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(counsel ivy doom-themes exec-path-from-shell kkp slime-volleyball)))
+   '(which-key lsp-mode flycheck company counsel-projectile projectile counsel ivy doom-themes exec-path-from-shell kkp slime-volleyball)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -98,72 +98,21 @@
 
 ;;;;Org mode configuration
 ;; Enable Org mode
-(require 'org)
+;; (require 'org)
 ;; Make Org mode work with files ending in .org
-;; (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 ;; The above is the default in recent emacsen
-
-(defun xah-copy-line-or-region ()
-  "Copy current line or selection.
-When called repeatedly, append copy subsequent lines.
-When `universal-argument' is called first, copy whole buffer (respects `narrow-to-region').
-
-URL `http://xahlee.info/emacs/emacs/emacs_copy_cut_current_line.html'
-Version: 2010-05-21 2022-10-03"
-  (interactive)
-  (let ((inhibit-field-text-motion nil))
-    (if current-prefix-arg
-        (progn
-          (copy-region-as-kill (point-min) (point-max)))
-      (if (region-active-p)
-          (progn
-            (copy-region-as-kill (region-beginning) (region-end)))
-        (if (eq last-command this-command)
-            (if (eobp)
-                (progn )
-              (progn
-                (kill-append "\n" nil)
-                (kill-append
-                 (buffer-substring-no-properties (line-beginning-position) (line-end-position))
-                 nil)
-                (progn
-                  (end-of-line)
-                  (forward-char))))
-          (if (eobp)
-              (if (eq (char-before) 10 )
-                  (progn )
-                (progn
-                  (copy-region-as-kill (line-beginning-position) (line-end-position))
-                  (end-of-line)))
-            (progn
-              (copy-region-as-kill (line-beginning-position) (line-end-position))
-              (end-of-line)
-              (forward-char))))))))
-
-(defun xah-cut-line-or-region ()
-  "Cut current line or selection.
-When `universal-argument' is called first, cut whole buffer (respects `narrow-to-region').
-
-URL `http://xahlee.info/emacs/emacs/emacs_copy_cut_current_line.html'
-Version: 2010-05-21 2015-06-10"
-  (interactive)
-  (if current-prefix-arg
-      (progn ; not using kill-region because we don't want to include previous kill
-        (kill-new (buffer-string))
-        (delete-region (point-min) (point-max)))
-    (progn (if (region-active-p)
-               (kill-region (region-beginning) (region-end) t)
-             (kill-region (line-beginning-position) (line-beginning-position 2))))))
+;; https://emacs.stackexchange.com/questions/22179/enable-visual-line-mode-and-org-indent-mode-when-opening-org-files
+(with-eval-after-load 'org       
+  (setq org-startup-indented t) ; Enable `org-indent-mode' by default
+  (add-hook 'org-mode-hook #'visual-line-mode))
 
 
-(global-set-key (kbd "<f2>") 'xah-cut-line-or-region) ; cut
-(global-set-key (kbd "<f3>") 'xah-copy-line-or-region) ; copy
-(global-set-key (kbd "<f4>") 'yank) ; paste
 
 ; figure out how to enable it only in org mode??
 ;(add-hook 'text-mode-hook 'visual-line-mode)
 
-(visual-line-mode)
+(visual-line-mode 1)
 
 (desktop-save-mode 1)
 
@@ -176,13 +125,13 @@ Version: 2010-05-21 2015-06-10"
 
 ;; Slurp environment variables from the shell.
 ;; a.k.a. The Most Asked Question On r/emacs
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize))
+;; (use-package exec-path-from-shell
+;;   :config
+;;   (exec-path-from-shell-initialize))
 
-(use-package doom-themes
-  :init
-  (load-theme 'doom-one))
+;; (use-package doom-themes
+;;   :init
+;;   (load-theme 'doom-one t))
 
 ;; Any Customize-based settings should live in custom.el, not here.
 (setq custom-file "~/.emacs.d/custom.el") ;; Without this emacs will dump generated custom settings in this file. No bueno.
@@ -196,6 +145,20 @@ Version: 2010-05-21 2015-06-10"
 ;; Fullscreen by default, as early as possible. This tiny window is not enough
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+
+;; This is to open emacs on a desktop session based on the current directory
+(setq desktop-path '("." "~/.emacs.d/" "~"))
+
+(require 'pbcopy)
+(turn-on-pbcopy)
+
+(load (expand-file-name "~/.roswell/helper.el"))
+; (setq inferior-lisp-program "ros -Q run")
+
+(setq slime-contribs '(slime-fancy slime-quicklisp slime-asdf helm-slime slime-quicklisp slime-company))
+
+(load-theme 'solarized-dark t)
+
 ;; Make M-x and other mini-buffers sortable, filterable
 (use-package ivy
   :init
@@ -203,9 +166,110 @@ Version: 2010-05-21 2015-06-10"
   (setq ivy-height 15
         ivy-use-virtual-buffers t
         ivy-use-selectable-prompt t))
-
 (use-package counsel
   :after ivy
   :init
   (counsel-mode 1)
   :bind (:map ivy-minibuffer-map))
+
+;; Company is the best Emacs completion system.
+;  :init
+;  (setq company-require-match nil            ; Don't require match, so you can still move your cursor as expected.
+;        company-tooltip-align-annotations t  ; Align annotation to the right side.
+;        company-eclim-auto-save nil          ; Stop eclim auto save.
+;        company-dabbrev-downcase nil)        ; No downcase when completion.
+
+  ;; Enable downcase only when completing the completion.
+;  (defun jcs--company-complete-selection--advice-around (fn)
+;    "Advice execute around `company-complete-selection' command."
+;    (let ((company-dabbrev-downcase t))
+;      (call-interactively fn)))
+;  (advice-add 'company-complete-selection :around #'jcs--company-complete-selection--advice-around)
+
+(use-package company
+  :bind (("C-." . company-complete))
+  :custom
+  (company-idle-delay 0) ;; I always want completion, give it to me asap
+  (company-dabbrev-downcase nil "Don't downcase returned candidates.")
+  (company-show-numbers t "Numbers are helpful.")
+  (company-tooltip-limit 10 "The more the merrier.")
+  :config
+  (global-company-mode) ;; We want completion everywhere
+  
+  ;; use numbers 0-9 to select company completion candidates
+  (let ((map company-active-map))
+    (mapc (lambda (x) (define-key map (format "%d" x)
+                        `(lambda () (interactive) (company-complete-number ,x))))
+          (number-sequence 0 9))))
+
+;; Flycheck is the newer version of flymake and is needed to make lsp-mode not freak out.
+(use-package flycheck
+  :config
+  (add-hook 'prog-mode-hook 'flycheck-mode) ;; always lint my code
+  (add-hook 'after-init-hook #'global-flycheck-mode))
+
+;; Package for interacting with language servers
+(use-package lsp-mode
+  :commands lsp
+  :config
+  (setq lsp-prefer-flymake nil ;; Flymake is outdated
+        lsp-headerline-breadcrumb-mode nil)) ;; I don't like the symbols on the header a-la-vscode, remove this if you like them.
+
+(use-package which-key :config (which-key-mode t))
+
+;; https://www.juniordeveloperdiaries.com/emacs-intro/ end of this tutorial
+
+
+(require 'multiple-cursors)
+
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+
+
+;; ;; Commented projectile out because sowing down emacs and bloating memory...
+;; ;; We need something to manage the various projects we work on
+;; ;; and for common functionality like project-wide searching, fuzzy file finding etc.
+;; (use-package projectile
+;;   :init
+;;   (projectile-mode t) ;; Enable this immediately
+;;   :config
+;;   (setq projectile-enable-caching t ;; Much better performance on large projects
+;; i        projectile-completion-system 'ivy)) ;; Ideally the minibuffer should aways look similar
+
+
+;; ;; Counsel and projectile should work together.
+;; (use-package counsel-projectile
+;;   :init
+;;   (counsel-projectile-mode))
+
+;; counsel-git to find file in project and counsel-git-grep to find text in project
+
+(global-set-key (kbd "C-c w") 'clipboard-kill-ring-save)
+
+;; This will translate <return> to RET for org-mode to work better...
+;; I'm removing it since C-M-m does the same thing...
+;; But saving for the future!
+;; (define-key special-event-map (kbd "<return>") 'my-ret-event)
+;; (defun my-ret-event ()
+;;   "Push RET onto `unread-command-events'."
+;;   (interactive)
+;;   (push '(t . ?\C-m) unread-command-events))
+
+(setq completion-styles '(initials flex))
+; (global-set-key (kbd "M-x") 'helm-M-x)
+
+
+;; https://github.com/jcs-elpa/company-fuzzy/tree/059e3e0893a2b3c0ad4bf27b6963e7547b97b5d4
+; (use-package company-fuzzy
+;  :hook (company-mode . company-fuzzy-mode)
+;  :init
+;  (setq company-fuzzy-sorting-backend 'flx
+;        company-fuzzy-prefix-on-top nil
+;        company-fuzzy-trigger-symbols '("." "->" "<" "\"" "'" "@")))
+
+; (global-company-fuzzy-mode 1)
+
+(provide 'init)
+;;; init.el ends here
