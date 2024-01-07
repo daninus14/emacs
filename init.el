@@ -113,6 +113,8 @@
 (use-package company
   :bind (("C-." . company-complete))
   :custom
+  (company-require-match nil)            ; Don't require match, so you can still move your cursor as expected.
+  (company-tooltip-align-annotations t)  ; Align annotation to the right side.
   (company-idle-delay 0) ;; I always want completion, give it to me asap
   (company-dabbrev-downcase nil "Don't downcase returned candidates.")
   (company-show-numbers t "Numbers are helpful.")
