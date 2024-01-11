@@ -147,5 +147,13 @@
 (setq completion-styles '(flex initials))
 ; (global-set-key (kbd "M-x") 'helm-M-x)
 
+;; for qlot
+;; https://github.com/fukamachi/qlot?tab=readme-ov-file#emacs
+(setq slime-lisp-implementations
+      '((ros ("ros" "run") :coding-system utf-8-unix)
+	(sbcl ("sbcl") :coding-system utf-8-unix)
+        (qlot ("qlot" "exec" "ros" "run") :coding-system utf-8-unix)))
+;	(qlot ("qlot" "exec" "sbcl") :coding-system utf-8-unix)))
+
 (provide 'init)
 ;;; init.el ends here
