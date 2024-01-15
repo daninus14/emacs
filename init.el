@@ -218,7 +218,7 @@
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-styles '(orderless basic)
+  (setq completion-styles '(orderless basic flex)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
@@ -399,6 +399,18 @@
   :ensure t ; only need to install it, embark loads it after consult if found
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
+
+;; TODO maybe install consult-flycheck and consult-project-extra
+;; Read this for embark https://karthinks.com/software/fifteen-ways-to-use-embark/
+
+(use-package smartparens-mode
+  :ensure smartparens  ;; install the package
+;  :hook (prog-mode text-mode markdown-mode slime-mode org-mode) ;; add `smartparens-mode` to these hooks
+  :config
+  ;; load default config
+  (require 'smartparens-config))
+
+(smartparens-global-mode t)
 
 (provide 'init)
 ;;; init.el ends here
