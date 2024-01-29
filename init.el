@@ -41,7 +41,8 @@
   (setq org-startup-indented t) ; Enable `org-indent-mode' by default
   (add-hook 'org-mode-hook #'visual-line-mode))
 
-(visual-line-mode 1)
+;(visual-line-mode 1)
+(global-visual-line-mode 1)
 
 (desktop-save-mode 1)
 
@@ -80,7 +81,8 @@
 (load (expand-file-name "~/.roswell/helper.el"))
 (setq inferior-lisp-program "ros -Q run")
 
-(setq slime-contribs '(slime-fancy slime-quicklisp slime-asdf slime-quicklisp slime-company ))
+(setq slime-contribs '(slime-fancy slime-quicklisp slime-asdf ))
+;; slime-company com
 ;; slime-package-fu ;; removed for vrtico
 ;; helm-slime ;; removed for vertico
 
@@ -100,23 +102,23 @@
 ;;   :bind (:map ivy-minibuffer-map))
 
 
-(use-package company
-  :bind (("C-." . company-complete))
-  :custom
-  (company-require-match nil)            ; Don't require match, so you can still move your cursor as expected.
-  (company-tooltip-align-annotations t)  ; Align annotation to the right side.
-  (company-idle-delay 0) ;; I always want completion, give it to me asap
-  (company-dabbrev-downcase nil "Don't downcase returned candidates.")
-  (company-show-numbers t "Numbers are helpful.")
-  (company-tooltip-limit 10 "The more the merrier.")
-  :config
-  (global-company-mode) ;; We want completion everywhere
+;; (use-package company
+;;   :bind (("C-." . company-complete))
+;;   :custom
+;;   (company-require-match nil)            ; Don't require match, so you can still move your cursor as expected.
+;;   (company-tooltip-align-annotations t)  ; Align annotation to the right side.
+;;   (company-idle-delay 0) ;; I always want completion, give it to me asap
+;;   (company-dabbrev-downcase nil "Don't downcase returned candidates.")
+;;   (company-show-numbers t "Numbers are helpful.")
+;;   (company-tooltip-limit 10 "The more the merrier.")
+;;   :config
+;;   (global-company-mode) ;; We want completion everywhere
   
-  ;; use numbers 0-9 to select company completion candidates
-  (let ((map company-active-map))
-    (mapc (lambda (x) (define-key map (format "%d" x)
-                        `(lambda () (interactive) (company-complete-number ,x))))
-          (number-sequence 0 9))))
+;;   ;; use numbers 0-9 to select company completion candidates
+;;   (let ((map company-active-map))
+;;     (mapc (lambda (x) (define-key map (format "%d" x)
+;;                         `(lambda () (interactive) (company-complete-number ,x))))
+;;           (number-sequence 0 9))))
 
 ;; Flycheck is the newer version of flymake and is needed to make lsp-mode not freak out.
 (use-package flycheck
@@ -362,7 +364,9 @@
   ;; (setq consult-project-function nil)
 )
 
-(define-key company-mode-map [remap completion-at-point] #'consult-company)
+;; (eval-after-load "company"
+;;   '(progn (define-key company-mode-map [remap completion-at-point] #'consult-company)))
+
 
 (use-package embark
   :ensure t
@@ -403,14 +407,64 @@
 ;; TODO maybe install consult-flycheck and consult-project-extra
 ;; Read this for embark https://karthinks.com/software/fifteen-ways-to-use-embark/
 
-(use-package smartparens-mode
-  :ensure smartparens  ;; install the package
-;  :hook (prog-mode text-mode markdown-mode slime-mode org-mode) ;; add `smartparens-mode` to these hooks
-  :config
-  ;; load default config
-  (require 'smartparens-config))
+;; (use-package smartparens-mode
+;;   :ensure smartparens  ;; install the package
+;; ;  :hook (prog-mode text-mode markdown-mode slime-mode org-mode) ;; add `smartparens-mode` to these hooks
+;;   :config
+;;   ;; load default config
+;;   (require 'smartparens-config))
 
+;; https://github.com/Fuco1/smartparens#getting-started
+(require 'smartparens-config)
 (smartparens-global-mode t)
+;; (eval-after-load "smartparens"
+;;   '(progn (smartparens-global-mode t)))
+
+
+;; Corfu
+(use-package corfu
+  ;; Optional customizations
+  ;; :custom
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-auto t)                 ;; Enable auto completion
+  ;; (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
+  ;; be used globally (M-/).  See also the customization variable
+  ;; `global-corfu-modes' to exclude certain modes.
+  :init
+  (global-corfu-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete))
+
+
+
+(unless (display-graphic-p)
+  (corfu-terminal-mode +1))
 
 (provide 'init)
 ;;; init.el ends here
